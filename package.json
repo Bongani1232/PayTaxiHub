@@ -1,0 +1,13 @@
+{
+  "name": "paytaxihub-frontend",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i src/main/frontend/tailwind.css -o src/main/resources/static/tailwind.generated.css --minify",
+    "test:frontend": "node --test src/test/frontend/static-site.test.cjs",
+    "build": "npm run build:css && npm run test:frontend"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.0",
+    "tailwindcss": "4.3.0"
+  }
+}

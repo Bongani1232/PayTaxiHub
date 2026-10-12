@@ -1,0 +1,6 @@
+package com.paytaxihub.entity;
+import jakarta.persistence.*; import java.time.LocalDateTime;
+@Entity @Table(name="User")
+public class User { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Integer userId; private String fullName,email,phoneNumber,passwordHash; @Enumerated(EnumType.STRING) private Role role; private LocalDateTime createdAt; private Boolean isActive = true;
+ public enum Role { Commuter, Driver, FleetOwner, Admin }
+ public User(){} public Integer getUserId(){return userId;} public void setUserId(Integer v){userId=v;} public String getFullName(){return fullName;} public void setFullName(String v){fullName=v;} public String getEmail(){return email;} public void setEmail(String v){email=v;} public String getPhoneNumber(){return phoneNumber;} public void setPhoneNumber(String v){phoneNumber=v;} public String getPasswordHash(){return passwordHash;} public void setPasswordHash(String v){passwordHash=v;} public Role getRole(){return role;} public void setRole(Role v){role=v;} public LocalDateTime getCreatedAt(){return createdAt;} public void setCreatedAt(LocalDateTime v){createdAt=v;} public Boolean getIsActive(){return isActive;} public void setIsActive(Boolean v){isActive=v;} }

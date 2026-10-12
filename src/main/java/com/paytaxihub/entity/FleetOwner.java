@@ -1,0 +1,3 @@
+package com.paytaxihub.entity;
+import jakarta.persistence.*;
+@Entity @Table(name="FleetOwner") public class FleetOwner { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Integer fleetOwnerId; @OneToOne @JoinColumn(name="user_id") private User user; private String companyName; public FleetOwner(){} public Integer getFleetOwnerId(){return fleetOwnerId;} public void setFleetOwnerId(Integer v){fleetOwnerId=v;} public User getUser(){return user;} public void setUser(User v){user=v;} public String getCompanyName(){return companyName;} public void setCompanyName(String v){companyName=v;} }
