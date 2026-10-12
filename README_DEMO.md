@@ -26,6 +26,27 @@ Flyway applies the database migrations when the app starts. **Do not run `RESET_
 
 The generated Tailwind stylesheet is already included. To rebuild it and run the frontend checks, first run `npm ci`, then `npm run build`.
 
+## Deploy on Railway
+
+Railway can host the app and its MySQL database and provide a public HTTPS address.
+
+1. Sign in to [Railway](https://railway.com/) and create a project using **Deploy from GitHub repo**. Select `Bongani1232/PayTaxiHub` and authorize access if asked.
+2. In the project, add a MySQL database service. Keep its service name `MySQL` so the variable references below work.
+3. In the app service's **Variables**, add:
+
+   ```text
+   DB_URL=jdbc:mysql://${{MySQL.MYSQLHOST}}:${{MySQL.MYSQLPORT}}/${{MySQL.MYSQLDATABASE}}?serverTimezone=Africa/Johannesburg&sslMode=REQUIRED
+   DB_USERNAME=${{MySQL.MYSQLUSER}}
+   DB_PASSWORD=${{MySQL.MYSQLPASSWORD}}
+   SESSION_COOKIE_SECURE=true
+   ```
+
+   Railway builds the app from the included `Dockerfile`. Do not add real credentials to GitHub or turn on `RESET_CODE_EXPOSE`.
+4. Wait for the app deployment to finish. In the app service, open **Settings → Networking → Public Networking** and choose **Generate Domain**.
+5. Open the generated `https://…railway.app` address. The home page is `/index.html`.
+
+The app uses Flyway migrations to create its tables on first startup. Do not run the reset SQL script against a database containing data you want to keep. This demo is not intended for real payments or sensitive personal information. Check Railway's current pricing and database backup options before using it.
+
 ## Tests
 
 Run backend unit tests:
