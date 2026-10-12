@@ -4,6 +4,30 @@ function $(id){ return document.getElementById(id); }
 function setText(id,value){ const el=$(id); if(el) el.textContent=String(value ?? ''); }
 function byId(id){ return document.getElementById(id); }
 function qs(name){ return new URLSearchParams(location.search).get(name); }
+function buildShiftLoginUrl(code){
+  const url=new URL('login.html',location.href);
+  url.searchParams.set('role','Commuter');
+  url.searchParams.set('shiftCode',String(code||'').trim());
+  return url.toString();
+}
+function shiftQrNetworkNotice(){
+  const host=location.hostname.toLowerCase();
+  return host==='localhost'||host.endsWith('.localhost')||host==='::1'||host==='[::1]'||/^127(?:\.\d{1,3}){3}$/.test(host)
+    ? 'This QR uses localhost, which only works on this computer. Open PayTaxiHub using your computer’s network address on the same Wi-Fi, or deploy it to a public HTTPS address before scanning.'
+    : '';
+}
+function showShiftQrNetworkNotice(id,afterId){
+  const message=shiftQrNetworkNotice();
+  let notice=byId(id);
+  if(!notice&&message){
+    notice=document.createElement('p');
+    notice.id=id;
+    notice.className='text-sm text-amber-700 mt-3';
+    notice.setAttribute('role','status');
+    byId(afterId).after(notice);
+  }
+  if(notice){notice.textContent=message;notice.classList.toggle('hidden',!message);}
+}
 function esc(value){ return escapeHtml(value); }
 function escapeHtml(value){ return String(value ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 function money(v){ return `R ${Number(v || 0).toFixed(2)}`; }
@@ -219,7 +243,7 @@ function bindAuthFormPrivacy(){
   }
   const clearFields=()=>{
     clearFormValues(form);
-    if(page==='login.html'&&byId('role'))byId('role').value='';
+    if(page==='login.html'&&byId('role'))byId('role').value=qs('shiftCode')?'Commuter':'';
   };
   clearFields();
   window.addEventListener('pagehide',clearFields);

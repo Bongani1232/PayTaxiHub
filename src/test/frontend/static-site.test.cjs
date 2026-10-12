@@ -55,6 +55,7 @@ function makeEngineContext(overrides = {}) {
       querySelectorAll() { return []; }
     },
     window: { addEventListener() {} },
+    URL,
     URLSearchParams,
     setTimeout,
     console,
@@ -342,7 +343,63 @@ test('login reports when a previous server session could not be revoked', () => 
   assert.match(login, /id="password"[^>]*autocomplete="new-password"[^>]*readonly/);
   assert.match(login, /emailEl\.readOnly=true;pwEl\.readOnly=true/);
   assert.match(login, /\[emailEl,pwEl\]\.forEach\(el=>el\.addEventListener\('focus',\(\)=>\{el\.readOnly=false;\}\)\)/);
-  assert.match(login, /src="app_engine\.js\?v=3"/);
+  assert.match(login, /src="app_engine\.js\?v=4"/);
+});
+
+test('driver shift QR opens commuter login and warns when its host is local-only', () => {
+  const context = makeEngineContext({
+    location: {
+      protocol: 'http:',
+      origin: 'http://localhost:8080',
+      href: 'http://localhost:8080/driver_dash.html',
+      hostname: 'localhost',
+      pathname: '/driver_dash.html'
+    }
+  });
+  const loginUrl = new URL(context.buildShiftLoginUrl('PTH-SHIFT:test-token'));
+  const driverDashboard = fs.readFileSync(path.join(staticRoot, 'driver_dash.html'), 'utf8');
+  const shiftPage = fs.readFileSync(path.join(staticRoot, 'shift.html'), 'utf8');
+  const login = fs.readFileSync(path.join(staticRoot, 'login.html'), 'utf8');
+
+  assert.equal(loginUrl.pathname, '/login.html');
+  assert.equal(loginUrl.searchParams.get('role'), 'Commuter');
+  assert.equal(loginUrl.searchParams.get('shiftCode'), 'PTH-SHIFT:test-token');
+  assert.match(context.shiftQrNetworkNotice(), /localhost.*only works on this computer/i);
+  assert.match(driverDashboard, /text:loginUrl/);
+  assert.match(driverDashboard, /src="app_engine\.js\?v=4"/);
+  assert.match(shiftPage, /buildShiftLoginUrl\(code\)/);
+  assert.match(shiftPage, /src="app_engine\.js\?v=4"/);
+  assert.match(login, /roleEl\.value=shiftCode\?'Commuter':''/);
+  assert.match(login, /src="app_engine\.js\?v=4"/);
+});
+
+test('QR login keeps the commuter role selected while clearing restored credentials', () => {
+  const elements = {
+    loginForm: { setAttribute() {}, querySelectorAll() { return []; } },
+    role: { value: 'Admin' },
+    email: { setAttribute() {} },
+    password: { setAttribute() {} },
+    mfaCode: { setAttribute() {} }
+  };
+  const context = makeEngineContext({
+    location: {
+      protocol: 'http:',
+      origin: 'http://localhost:8080',
+      href: 'http://localhost:8080/login.html?shiftCode=PTH-SHIFT%3Atest-token',
+      hostname: 'localhost',
+      pathname: '/login.html',
+      search: '?shiftCode=PTH-SHIFT%3Atest-token'
+    },
+    sessionStorage: { getItem() { return null; } },
+    document: {
+      addEventListener() {},
+      querySelectorAll() { return []; },
+      getElementById(id) { return elements[id] ?? null; }
+    }
+  });
+
+  context.bindAuthFormPrivacy();
+  assert.equal(elements.role.value, 'Commuter');
 });
 
 test('authentication failures are generic and private pages disable browser caching', () => {

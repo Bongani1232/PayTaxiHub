@@ -26,6 +26,10 @@ Flyway applies the database migrations when the app starts. **Do not run `RESET_
 
 The generated Tailwind stylesheet is already included. To rebuild it and run the frontend checks, first run `npm ci`, then `npm run build`.
 
+## Scanning the driver QR
+
+The QR opens commuter login and carries the active shift code. The phone must be able to reach the same PayTaxiHub server. If the app is open on the computer at `http://localhost:8080`, a phone cannot use that address because `localhost` refers to the phone itself. For local testing on Windows, find the computer's Wi-Fi IPv4 address with `ipconfig`, open `http://<IPv4-address>:8080` on the computer, and connect the phone to the same Wi-Fi. The computer's firewall must also allow the app port. For scanning from anywhere, deploy the app and use its public HTTPS URL.
+
 ## Deploy on Railway
 
 Railway can host the app and its MySQL database and provide a public HTTPS address.

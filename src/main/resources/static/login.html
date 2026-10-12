@@ -12,7 +12,7 @@
 </form>
 <p class="text-sm mt-4"><a class="text-[#007A5E] font-bold" href="forgot-password.html">Forgot password?</a></p>
 <p class="text-sm text-gray-500 mt-5">New to PayTaxiHub? <a class="text-[#007A5E] font-bold" href="register.html">Create an account</a></p>
-</div></section></main><div id="toast-container"></div><script src="app_engine.js?v=3"></script><script>
+</div></section></main><div id="toast-container"></div><script src="app_engine.js?v=4"></script><script>
 (function(){
 const form=document.getElementById('loginForm'),roleEl=document.getElementById('role'),emailEl=document.getElementById('email'),pwEl=document.getElementById('password'),mfaBox=document.getElementById('mfaBox'),mfaEl=document.getElementById('mfaCode'),errBox=document.getElementById('loginError'),btn=document.getElementById('loginBtn'),toggle=document.getElementById('togglePw');
 const shiftCode=new URLSearchParams(location.search).get('shiftCode')||'';
@@ -36,7 +36,7 @@ async function endOldSession(){
     busy=false;btn.disabled=false;btn.textContent='Secure Login';
   }
 }
-function resetForm(){form.reset();roleEl.value='';emailEl.value='';pwEl.value='';mfaEl.value='';emailEl.readOnly=true;pwEl.readOnly=true;mfaBox.classList.add('hidden');challengeId=null;clearError();pwEl.type='password';toggle.textContent='Show';toggle.setAttribute('aria-pressed','false');btn.disabled=false;btn.textContent='Secure Login';busy=false;}
+function resetForm(){form.reset();roleEl.value=shiftCode?'Commuter':'';emailEl.value='';pwEl.value='';mfaEl.value='';emailEl.readOnly=true;pwEl.readOnly=true;mfaBox.classList.add('hidden');challengeId=null;clearError();pwEl.type='password';toggle.textContent='Show';toggle.setAttribute('aria-pressed','false');btn.disabled=false;btn.textContent='Secure Login';busy=false;}
 function clearError(){errBox.className='hidden';errBox.textContent='';[roleEl,emailEl,pwEl,mfaEl].forEach(el=>el.removeAttribute('aria-invalid'));}
 function showError(msg,field){errBox.className='notice error';errBox.textContent=msg;[roleEl,emailEl,pwEl,mfaEl].forEach(el=>el.removeAttribute('aria-invalid'));if(field){field.setAttribute('aria-invalid','true');field.focus();}}
 // Start empty on first load and when the browser restores the page from its back/forward cache.
